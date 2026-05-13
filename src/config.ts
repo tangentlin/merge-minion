@@ -13,6 +13,7 @@ export interface RepoConfig {
 export interface Config {
   repos: RepoConfig[];
   cooldownMinutes: number;
+  tickIntervalSeconds: number;
   dryRun: boolean;
 }
 
@@ -55,9 +56,15 @@ function validate(input: unknown): Config {
     typeof input.cooldownMinutes === "number" ? input.cooldownMinutes : 15;
   if (cooldownMinutes < 0) throw new Error("config.cooldownMinutes: must be >= 0");
 
+  const tickIntervalSeconds =
+    typeof input.tickIntervalSeconds === "number" ? input.tickIntervalSeconds : 300;
+  if (tickIntervalSeconds <= 0) {
+    throw new Error("config.tickIntervalSeconds: must be > 0");
+  }
+
   const dryRun = input.dryRun === true;
 
-  return { repos, cooldownMinutes, dryRun };
+  return { repos, cooldownMinutes, tickIntervalSeconds, dryRun };
 }
 
 function isObject(x: unknown): x is Record<string, unknown> {
